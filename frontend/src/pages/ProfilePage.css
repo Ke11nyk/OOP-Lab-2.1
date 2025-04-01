@@ -1,0 +1,14 @@
+.profile-page {
+    padding: 20px;
+}
+
+.bookings-list {
+    list-style: none;
+    padding: 0;
+}
+
+.bookings-list li {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}

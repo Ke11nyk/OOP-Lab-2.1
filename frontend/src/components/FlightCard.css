@@ -1,0 +1,43 @@
+.flight-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.flight-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.price {
+    color: #e53935;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.flight-route {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 16px 0;
+}
+
+.arrow {
+    font-size: 1.5em;
+    color: #666;
+}
+
+.departure, .arrival {
+    text-align: center;
+}
+
+.flight-details {
+    margin-top: 12px;
+    color: #666;
+    font-size: 0.9em;
+}
