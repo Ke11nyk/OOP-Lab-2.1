@@ -4,7 +4,12 @@ import { Flight } from '../types/types';
 import FlightCard from './FlightCard';
 import './FlightList.css';
 
-const FlightList = () => {
+interface FlightListProps {
+    departure?: string;
+    arrival?: string;
+}
+
+const FlightList = ({ departure = '', arrival = '' }: FlightListProps) => {
     const [flights, setFlights] = useState<Flight[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -14,7 +19,18 @@ const FlightList = () => {
         const fetchFlights = async () => {
             console.log('Starting an API request...');
             try {
-                const response = await api.get('/flights');
+                // Створюємо об'єкт параметрів тільки з непустими значеннями
+                const params: Record<string, string> = {};
+
+                if (departure.trim()) params.departure = departure.trim();
+                if (arrival.trim()) params.arrival= arrival.trim();
+
+                console.log('Request params:', params); // Додаємо лог для перевірки параметрів
+
+                const response = await api.get('/flights', {
+                    params: params
+                });
+
                 console.log('API response:', response);
                 setFlights(response.data);
             } catch (err: any) {
@@ -26,7 +42,7 @@ const FlightList = () => {
         };
 
         fetchFlights();
-    }, []);
+    }, [departure, arrival]);
 
     if (loading) return <div className="loading">Loading flights...</div>;
     if (error) return <div className="error">{error}</div>;
