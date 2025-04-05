@@ -10,13 +10,16 @@ const FlightList = () => {
     const [error, setError] = useState('');
 
     useEffect(() => {
+        console.log('FlightList component mounted');
         const fetchFlights = async () => {
+            console.log('Starting an API request...');
             try {
                 const response = await api.get('/flights');
+                console.log('API response:', response);
                 setFlights(response.data);
-            } catch (err) {
+            } catch (err: any) {
+                console.error('Error details:', err.response || err);
                 setError('Failed to load flights');
-                console.error(err);
             } finally {
                 setLoading(false);
             }
