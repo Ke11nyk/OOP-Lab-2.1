@@ -21,8 +21,8 @@ public class FlightDAO {
         try {
             PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO flights (flight_number, departure_airport, arrival_airport, " +
-                            "departure_time, arrival_time, base_price, total_seats, available_seats, is_active) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            "departure_time, arrival_time, base_price, total_seats, available_seats, current_price, is_active) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS);
 
             statement.setString(1, flight.getFlightNumber());
@@ -33,7 +33,8 @@ public class FlightDAO {
             statement.setBigDecimal(6, flight.getBasePrice());
             statement.setInt(7, flight.getTotalSeats());
             statement.setInt(8, flight.getAvailableSeats());
-            statement.setBoolean(9, flight.isActive());
+            statement.setBigDecimal(9, flight.getCurrentPrice());
+            statement.setBoolean(10, flight.isActive());
 
             statement.executeUpdate();
 
@@ -73,15 +74,22 @@ public class FlightDAO {
     public List<Flight> findByAirports(String departure, String arrival) {
         List<Flight> flights = new ArrayList<>();
         try {
+            log.info("Searching for flights from '{}' to '{}'", departure, arrival);
             PreparedStatement statement = connection.prepareStatement(
                     "SELECT * FROM flights WHERE departure_airport = ? AND arrival_airport = ?");
             statement.setString(1, departure);
             statement.setString(2, arrival);
 
             ResultSet rs = statement.executeQuery();
+            int count = 0;
             while (rs.next()) {
+                count++;
                 flights.add(mapFlight(rs));
             }
+            log.info("Found {} flights in database before filtering", count);
+
+            // Додатково виведемо деталі кожного рейсу для діагностики
+            flights.forEach(flight -> log.debug("Found flight: {}", flight));
         } catch (SQLException e) {
             log.error("Error finding flights from {} to {}", departure, arrival, e);
         }
@@ -115,6 +123,7 @@ public class FlightDAO {
                 .basePrice(rs.getBigDecimal("base_price"))
                 .totalSeats(rs.getInt("total_seats"))
                 .availableSeats(rs.getInt("available_seats"))
+                .currentPrice(rs.getBigDecimal("current_price"))
                 .isActive(rs.getBoolean("is_active"))
                 .build();
     }

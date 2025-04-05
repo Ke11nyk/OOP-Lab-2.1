@@ -20,8 +20,8 @@ public class Flight {
     private BigDecimal basePrice;
     private int totalSeats;
     private int availableSeats;
+    private BigDecimal currentPrice;
     private boolean isActive;
-    private BigDecimal currentPrice; // Додано нове поле
 
     /**
      * Перевіряє, чи була підвищена ціна порівняно з базовою
