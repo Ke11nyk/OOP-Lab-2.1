@@ -14,10 +14,10 @@ function App() {
         <div className="app-content">
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="${REACT_APP_API_URL}/flights" element={<FlightsPage />} />
-            <Route path="${REACT_APP_API_URL}/profile" element={<ProfilePage />} />
-            <Route path="${REACT_APP_API_URL}/login" element={<LoginForm />} />
-            <Route path="${REACT_APP_API_URL}/register" element={<RegisterForm />} />
+            <Route path="/flights" element={<FlightsPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/register" element={<RegisterForm />} />
           </Routes>
         </div>
       </BrowserRouter>
