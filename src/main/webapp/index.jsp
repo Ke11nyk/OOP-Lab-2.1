@@ -7,7 +7,7 @@
 <body>
 <h1><%= "Lowcost API requests:" %>
 </h1><br/>
-<p><a href="/booking">/booking</a></p>
-<p><a href="/flights">/flights</a></p>
+<p><a href="http://localhost:8080/OOP_Lab_2_1_war_exploded/bookings">/bookings</a></p>
+<p><a href="http://localhost:8080/OOP_Lab_2_1_war_exploded/flights">/flights</a></p>
 </body>
 </html>
