@@ -8,8 +8,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
-    private String id; // ID з Keycloak/Auth0
+    private int id;
     private String email;
     private String fullName;
+    private String password;
     private LocalDateTime registeredAt;
 }
