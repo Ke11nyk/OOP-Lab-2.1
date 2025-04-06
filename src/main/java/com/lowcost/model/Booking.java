@@ -10,13 +10,14 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class Booking {
     private int id;
-    private String userId;
+    private int userId;
     private int flightId;
-    private String bookingNumber;
-    private LocalDateTime createdAt;
+    private String bookingReference;
+    private LocalDateTime bookingDate;
     private BigDecimal totalPrice;
     private BookingStatus status; // Enum
     private boolean priorityBoarding;
+    private boolean checkedBaggage;
     private int baggageCount;
 
     public enum BookingStatus {

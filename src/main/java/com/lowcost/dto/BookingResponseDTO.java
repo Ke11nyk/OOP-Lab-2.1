@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 
 @Data
 public class BookingResponseDTO {
-    private String bookingNumber;
-    private String flightNumber;
+    private String bookingReference;
+    private int flightId;
     private String departureAirport;
     private String arrivalAirport;
     private LocalDateTime departureTime;

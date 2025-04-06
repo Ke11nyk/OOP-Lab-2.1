@@ -16,13 +16,14 @@ public abstract class BookingMapper {
     private FlightDAO flightDAO = new FlightDAO();
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "bookingNumber", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "bookingReference", ignore = true)
+    @Mapping(target = "bookingDate", ignore = true)
     @Mapping(target = "totalPrice", ignore = true)
     @Mapping(target = "status", ignore = true)
+    @Mapping(target = "checkedBaggage", expression = "java(dto.getBaggageCount() > 0)")
     public abstract Booking toBooking(BookingRequestDTO dto);
 
-    @Mapping(target = "flightNumber", ignore = true)
+    @Mapping(target = "flightId", ignore = true)
     @Mapping(target = "departureAirport", ignore = true)
     @Mapping(target = "arrivalAirport", ignore = true)
     @Mapping(target = "departureTime", ignore = true)
@@ -33,7 +34,7 @@ public abstract class BookingMapper {
     protected void afterToBookingResponseDTO(Booking booking, @MappingTarget BookingResponseDTO dto) {
         Flight flight = flightDAO.findById(booking.getFlightId());
         if (flight != null) {
-            dto.setFlightNumber(flight.getFlightNumber());
+            dto.setFlightId(flight.getId());
             dto.setDepartureAirport(flight.getDepartureAirport());
             dto.setArrivalAirport(flight.getArrivalAirport());
             dto.setDepartureTime(flight.getDepartureTime());

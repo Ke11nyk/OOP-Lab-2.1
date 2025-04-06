@@ -20,69 +20,93 @@ public class BookingDAO {
     public Booking save(Booking booking) {
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO bookings (user_id, flight_id, booking_number, created_at, " +
-                            "total_price, status, priority_boarding, baggage_count) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    "INSERT INTO bookings (user_id, flight_id, booking_reference, booking_date, " +
+                            "total_price, status, has_priority_boarding, has_checked_baggage, baggage_count) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS);
 
-            statement.setString(1, booking.getUserId());
+            statement.setInt(1, booking.getUserId());  // Changed from String.valueOf to direct setInt
             statement.setInt(2, booking.getFlightId());
-            statement.setString(3, booking.getBookingNumber());
-            statement.setTimestamp(4, Timestamp.valueOf(booking.getCreatedAt()));
+            statement.setString(3, booking.getBookingReference());
+            statement.setTimestamp(4, Timestamp.valueOf(booking.getBookingDate()));
             statement.setBigDecimal(5, booking.getTotalPrice());
             statement.setString(6, booking.getStatus().name());
             statement.setBoolean(7, booking.isPriorityBoarding());
-            statement.setInt(8, booking.getBaggageCount());
+            statement.setBoolean(8, booking.isCheckedBaggage());
+            statement.setInt(9, booking.getBaggageCount());
 
-            statement.executeUpdate();
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected == 0) {
+                log.error("Creating booking failed, no rows affected.");
+                return null;
+            }
 
             ResultSet rs = statement.getGeneratedKeys();
             if (rs.next()) {
                 booking.setId(rs.getInt(1));
+                return booking;
+            } else {
+                log.error("Creating booking failed, no ID obtained.");
+                return null;
             }
-            return booking;
         } catch (SQLException e) {
             log.error("Error creating booking: " + booking.toString(), e);
             return null;
         }
     }
 
-    public boolean updateStatus(String bookingId, BookingStatus status) {
+    // Method to update status by ID
+    public boolean updateStatusById(int bookingId, BookingStatus status) {
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    "UPDATE bookings SET status = ? WHERE booking_number = ?");
+                    "UPDATE bookings SET status = ? WHERE id = ?");
             statement.setString(1, status.name());
-            statement.setString(2, bookingId);
+            statement.setInt(2, bookingId);
 
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
-            log.error("Error updating booking status: {}", bookingId, e);
+            log.error("Error updating booking status by ID: {}", bookingId, e);
             return false;
         }
     }
 
-    public Booking findByNumber(String bookingNumber) {
+    // Method to update status by reference
+    public boolean updateStatus(String bookingReference, BookingStatus status) {
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    "SELECT * FROM bookings WHERE booking_number = ?");
-            statement.setString(1, bookingNumber);
+                    "UPDATE bookings SET status = ? WHERE booking_reference = ?");
+            statement.setString(1, status.name());
+            statement.setString(2, bookingReference);
+
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            log.error("Error updating booking status by reference: {}", bookingReference, e);
+            return false;
+        }
+    }
+
+    public Booking findByReference(String bookingReference) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "SELECT * FROM bookings WHERE booking_reference = ?");
+            statement.setString(1, bookingReference);
 
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 return mapBooking(rs);
             }
         } catch (SQLException e) {
-            log.error("Error finding booking by number: {}", bookingNumber, e);
+            log.error("Error finding booking by reference: {}", bookingReference, e);
         }
         return null;
     }
 
-    public List<Booking> findByUserId(String userId) {
+    public List<Booking> findByUserId(int userId) {
         List<Booking> bookings = new ArrayList<>();
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    "SELECT * FROM bookings WHERE user_id = ? ORDER BY created_at DESC");
-            statement.setString(1, userId);
+                    "SELECT * FROM bookings WHERE user_id = ? ORDER BY booking_date DESC");
+            statement.setInt(1, userId);
 
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
@@ -95,19 +119,20 @@ public class BookingDAO {
     }
 
     public boolean cancelBooking(int bookingId) {
-        return updateStatus(String.valueOf(bookingId), BookingStatus.CANCELLED);
+        return updateStatusById(bookingId, BookingStatus.CANCELLED);
     }
 
     private Booking mapBooking(ResultSet rs) throws SQLException {
         return Booking.builder()
                 .id(rs.getInt("id"))
-                .userId(rs.getString("user_id"))
+                .userId(rs.getInt("user_id"))
                 .flightId(rs.getInt("flight_id"))
-                .bookingNumber(rs.getString("booking_number"))
-                .createdAt(rs.getTimestamp("created_at").toLocalDateTime())
+                .bookingReference(rs.getString("booking_reference"))
+                .bookingDate(rs.getTimestamp("booking_date").toLocalDateTime())
                 .totalPrice(rs.getBigDecimal("total_price"))
                 .status(BookingStatus.valueOf(rs.getString("status")))
-                .priorityBoarding(rs.getBoolean("priority_boarding"))
+                .priorityBoarding(rs.getBoolean("has_priority_boarding"))
+                .checkedBaggage(rs.getBoolean("has_checked_baggage"))
                 .baggageCount(rs.getInt("baggage_count"))
                 .build();
     }
