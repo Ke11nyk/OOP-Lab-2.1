@@ -27,10 +27,21 @@ const RegisterForm = () => {
         setError('');
 
         try {
-            await api.post('/auth/register', formData);
-            navigate('/login?registered=true');
+            // Відправляємо дані користувача на сервер для реєстрації
+            const response = await api.post('/users', {
+                email: formData.email,
+                fullName: formData.fullName,
+                password: formData.password
+            });
+
+            if (response.status === 201) {
+                // Перенаправляємо на сторінку входу після успішної реєстрації
+                navigate('/login?registered=true');
+            } else {
+                setError('Щось пішло не так при реєстрації.');
+            }
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Registration failed');
+            setError(err.response?.data?.error || 'Помилка реєстрації. Спробуйте ще раз.');
         } finally {
             setIsLoading(false);
         }
@@ -38,12 +49,12 @@ const RegisterForm = () => {
 
     return (
         <div className="auth-form-container">
-            <h2>Create Account</h2>
+            <h2>Створити обліковий запис</h2>
             {error && <div className="error-message">{error}</div>}
 
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label htmlFor="fullName">Full Name</label>
+                    <label htmlFor="fullName">Повне ім'я</label>
                     <input
                         type="text"
                         id="fullName"
@@ -67,7 +78,7 @@ const RegisterForm = () => {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="password">Password</label>
+                    <label htmlFor="password">Пароль</label>
                     <input
                         type="password"
                         id="password"
@@ -80,12 +91,12 @@ const RegisterForm = () => {
                 </div>
 
                 <button type="submit" disabled={isLoading}>
-                    {isLoading ? 'Registering...' : 'Register'}
+                    {isLoading ? 'Реєстрація...' : 'Зареєструватися'}
                 </button>
             </form>
 
             <div className="auth-footer">
-                Already have an account? <a href="/login">Log in</a>
+                Вже маєте обліковий запис? <a href="/login">Увійти</a>
             </div>
         </div>
     );
