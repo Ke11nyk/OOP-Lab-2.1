@@ -30,7 +30,7 @@ const BookingForm = ({ flightId }: BookingFormProps) => {
 
         // Перевірка, чи користувач авторизований
         if (!userId) {
-            setError('Для бронювання необхідно увійти в систему');
+            setError('To make a reservation you must log in.');
             navigate('/login?redirect=booking');
             return;
         }
@@ -46,10 +46,10 @@ const BookingForm = ({ flightId }: BookingFormProps) => {
                 baggageCount: baggage,
                 userId: userId
             });
-            alert(`Бронювання створено! Номер: ${response.data.bookingReference}`);
+            alert(`Reservation created! Reference: ${response.data.bookingReference}`);
         } catch (error: any) {
-            console.error('Помилка бронювання:', error);
-            setError(error.response?.data?.error || 'Не вдалося забронювати. Спробуйте ще раз.');
+            console.error('Booking error:', error);
+            setError(error.response?.data?.error || 'Reservation failed. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -60,7 +60,7 @@ const BookingForm = ({ flightId }: BookingFormProps) => {
             {error && <div className="error-message">{error}</div>}
 
             <label>
-                Пріоритетна посадка:
+                Priority boarding:
                 <input
                     type="checkbox"
                     checked={priority}
@@ -69,7 +69,7 @@ const BookingForm = ({ flightId }: BookingFormProps) => {
             </label>
 
             <label>
-                Багаж (максимум 3):
+                Baggage (maximum 3):
                 <input
                     type="number"
                     min="0"
@@ -80,7 +80,7 @@ const BookingForm = ({ flightId }: BookingFormProps) => {
             </label>
 
             <button type="submit" disabled={isSubmitting || !userId}>
-                {isSubmitting ? 'Обробка...' : 'Забронювати рейс'}
+                {isSubmitting ? 'Processing...' : 'Book a flight'}
             </button>
         </form>
     );

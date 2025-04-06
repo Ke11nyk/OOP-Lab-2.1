@@ -9,6 +9,7 @@ import lombok.extern.log4j.Log4j2;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -203,5 +204,30 @@ public class BookingService {
 
     public String getLastErrorMessage() {
         return lastErrorMessage != null ? lastErrorMessage : "Unknown error";
+    }
+
+    public List<Booking> getBookingsByUserId(int userId) {
+        try {
+            lastErrorMessage = null;
+
+            if (userId <= 0) {
+                setErrorAndLog("Invalid user ID: " + userId);
+                return Collections.emptyList();
+            }
+
+            log.info("Retrieving bookings for user ID: {}", userId);
+            List<Booking> bookings = bookingDAO.findByUserId(userId);
+
+            if (bookings == null) {
+                log.info("No bookings found for user ID: {}", userId);
+                return Collections.emptyList();
+            }
+
+            log.info("Found {} bookings for user ID: {}", bookings.size(), userId);
+            return bookings;
+        } catch (Exception e) {
+            setErrorAndLog("Error retrieving bookings for user ID: " + userId, e);
+            return Collections.emptyList();
+        }
     }
 }

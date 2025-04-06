@@ -3,10 +3,13 @@ package com.lowcost.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.lowcost.dao.FlightDAO;
 import com.lowcost.dto.BookingRequestDTO;
 import com.lowcost.mapper.BookingMapper;
 import com.lowcost.model.Booking;
+import com.lowcost.model.Flight;
 import com.lowcost.service.BookingService;
+import com.lowcost.service.FlightService;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,12 +17,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Log4j2
-@WebServlet(name = "BookingServlet", value = "/bookings")
+@WebServlet(name = "BookingServlet", value = "/bookings/*")
 public class BookingController extends HttpServlet {
     private final BookingService bookingService = new BookingService();
     private final ObjectMapper objectMapper;
@@ -29,6 +34,30 @@ public class BookingController extends HttpServlet {
         // Configure ObjectMapper to handle Java 8 date/time types
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.setContentType("application/json"); // Явно указываем JSON
+        resp.setCharacterEncoding("UTF-8");
+
+        String userIdParam = req.getParameter("userId");
+
+        try {
+            int userId = Integer.parseInt(userIdParam);
+            List<Booking> bookings = bookingService.getBookingsByUserId(userId);
+
+            // Используем ObjectMapper для преобразования в JSON
+            String jsonResponse = objectMapper.writeValueAsString(bookings);
+            resp.getWriter().write(jsonResponse);
+
+        } catch (NumberFormatException e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write("{\"error\":\"Invalid userId format\"}");
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write("{\"error\":\"Internal server error\"}");
+        }
     }
 
     @Override

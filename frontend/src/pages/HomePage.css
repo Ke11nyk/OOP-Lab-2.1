@@ -11,3 +11,31 @@
     border-radius: 4px;
     text-decoration: none;
 }
+
+.user-greeting {
+    margin: 1rem 0;
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.user-greeting p {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #fff;
+}
+
+.profile-link {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: #4a6fa5;
+    color: white;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.profile-link:hover {
+    background-color: #3a5a80;
+}

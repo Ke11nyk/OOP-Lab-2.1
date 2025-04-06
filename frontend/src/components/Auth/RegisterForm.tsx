@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import api from '../../api/client';
 import './AuthForms.css';
 
@@ -27,7 +27,6 @@ const RegisterForm = () => {
         setError('');
 
         try {
-            // Відправляємо дані користувача на сервер для реєстрації
             const response = await api.post('/users', {
                 email: formData.email,
                 fullName: formData.fullName,
@@ -35,13 +34,17 @@ const RegisterForm = () => {
             });
 
             if (response.status === 201) {
-                // Перенаправляємо на сторінку входу після успішної реєстрації
-                navigate('/login?registered=true');
+                localStorage.setItem('userId', response.data.id);
+                localStorage.setItem('authToken', 'true');
+                localStorage.setItem('userName', formData.fullName);
+
+                // Перенаправляємо на головну сторінку
+                navigate('/');
             } else {
-                setError('Щось пішло не так при реєстрації.');
+                setError('Something went wrong during registration.');
             }
         } catch (err: any) {
-            setError(err.response?.data?.error || 'Помилка реєстрації. Спробуйте ще раз.');
+            setError(err.response?.data?.error || 'Registration error. Please try again.');
         } finally {
             setIsLoading(false);
         }
@@ -49,12 +52,12 @@ const RegisterForm = () => {
 
     return (
         <div className="auth-form-container">
-            <h2>Створити обліковий запис</h2>
+            <h2>Create an account</h2>
             {error && <div className="error-message">{error}</div>}
 
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label htmlFor="fullName">Повне ім'я</label>
+                    <label htmlFor="fullName">Full name</label>
                     <input
                         type="text"
                         id="fullName"
@@ -78,7 +81,7 @@ const RegisterForm = () => {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="password">Пароль</label>
+                    <label htmlFor="password">Password</label>
                     <input
                         type="password"
                         id="password"
@@ -91,12 +94,12 @@ const RegisterForm = () => {
                 </div>
 
                 <button type="submit" disabled={isLoading}>
-                    {isLoading ? 'Реєстрація...' : 'Зареєструватися'}
+                    {isLoading ? 'Registration...' : 'Register'}
                 </button>
             </form>
 
             <div className="auth-footer">
-                Вже маєте обліковий запис? <a href="/login">Увійти</a>
+                Already have an account? <Link to="/login">Log in</Link>
             </div>
         </div>
     );

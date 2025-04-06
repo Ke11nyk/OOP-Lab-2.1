@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import api from '../../api/client';
 import './AuthForms.css';
 
@@ -26,7 +26,6 @@ const LoginForm = () => {
         setError('');
 
         try {
-            // Використовуємо правильний ендпоінт для автентифікації
             const response = await api.post('/auth/login', {
                 email: formData.email,
                 password: formData.password
@@ -34,16 +33,18 @@ const LoginForm = () => {
 
             if (response.data && response.data.id) {
                 localStorage.setItem('userId', response.data.id);
-                // Можна також зберегти інші дані користувача, якщо потрібно
-                // localStorage.setItem('userEmail', response.data.email);
+                localStorage.setItem('authToken', 'true'); // Проста мітка автентифікації
+                if (response.data.fullName) {
+                    localStorage.setItem('userName', response.data.fullName);
+                }
 
-                // Перенаправляємо на сторінку польотів після успішного входу
-                navigate('/flights');
+                // Перенаправляємо на головну сторінку
+                navigate('/');
             } else {
-                setError('Вхід не вдався. Спробуйте ще раз.');
+                setError('Sign in failed. Please try again.');
             }
         } catch (err: any) {
-            setError(err.response?.data?.error || 'Невірна електронна пошта або пароль');
+            setError(err.response?.data?.error || 'Incorrect email or password');
         } finally {
             setIsLoading(false);
         }
@@ -51,7 +52,7 @@ const LoginForm = () => {
 
     return (
         <div className="auth-form-container">
-            <h2>Увійти до облікового запису</h2>
+            <h2>Log in to your account</h2>
             {error && <div className="error-message">{error}</div>}
 
             <form onSubmit={handleSubmit}>
@@ -69,7 +70,7 @@ const LoginForm = () => {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="password">Пароль</label>
+                    <label htmlFor="password">Password</label>
                     <input
                         type="password"
                         id="password"
@@ -83,12 +84,12 @@ const LoginForm = () => {
                 </div>
 
                 <button type="submit" disabled={isLoading}>
-                    {isLoading ? 'Вхід...' : 'Увійти'}
+                    {isLoading ? 'Entry...' : 'Log in'}
                 </button>
             </form>
 
             <div className="auth-footer">
-                Немає облікового запису? <a href="/register">Зареєструватися</a>
+                Don't have an account? <Link to="/register">Register</Link>
             </div>
         </div>
     );
