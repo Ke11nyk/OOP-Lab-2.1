@@ -124,36 +124,6 @@ public class BookingService {
         }
     }
 
-    public boolean confirmBooking(String bookingNumber) {
-        return updateBookingStatus(bookingNumber, BookingStatus.CONFIRMED);
-    }
-
-    public boolean cancelBooking(String bookingNumber) {
-        Booking booking = bookingDAO.findByReference(bookingNumber);
-        if (booking == null) {
-            return false;
-        }
-
-        // Return seat to flight
-        if (!flightDAO.increaseAvailableSeats(booking.getFlightId())) {
-            log.error("Failed to increase available seats for flight id: {}", booking.getFlightId());
-        }
-
-        return updateBookingStatus(bookingNumber, BookingStatus.CANCELLED);
-    }
-
-    public boolean payForBooking(String bookingNumber) {
-        return updateBookingStatus(bookingNumber, BookingStatus.PAID);
-    }
-
-    public Booking getBooking(String bookingNumber) {
-        return bookingDAO.findByReference(bookingNumber);
-    }
-
-    public List<Booking> getUserBookings(int userId) {
-        return bookingDAO.findByUserId(userId);
-    }
-
     public boolean updateBookingStatus(String bookingNumber, BookingStatus status) {
         try {
             if (bookingNumber == null || bookingNumber.isEmpty()) {

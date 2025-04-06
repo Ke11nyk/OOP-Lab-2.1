@@ -38,7 +38,7 @@ public class BookingController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        resp.setContentType("application/json"); // Явно указываем JSON
+        resp.setContentType("application/json"); // Specify JSON explicitly
         resp.setCharacterEncoding("UTF-8");
 
         String userIdParam = req.getParameter("userId");
@@ -47,7 +47,7 @@ public class BookingController extends HttpServlet {
             int userId = Integer.parseInt(userIdParam);
             List<Booking> bookings = bookingService.getBookingsByUserId(userId);
 
-            // Используем ObjectMapper для преобразования в JSON
+            // Use ObjectMapper to convert to JSON
             String jsonResponse = objectMapper.writeValueAsString(bookings);
             resp.getWriter().write(jsonResponse);
 

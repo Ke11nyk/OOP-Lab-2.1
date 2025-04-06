@@ -5,7 +5,6 @@ import com.lowcost.model.User;
 import lombok.extern.log4j.Log4j2;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 
 @Log4j2
 public class UserDAO {
@@ -33,7 +32,7 @@ public class UserDAO {
                 throw new SQLException("Creating user failed, no rows affected.");
             }
 
-            // Отримуємо згенерований ID
+            // We get the generated ID
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     user.setId(generatedKeys.getInt(1));

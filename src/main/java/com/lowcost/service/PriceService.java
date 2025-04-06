@@ -48,7 +48,7 @@ public class PriceService {
         BigDecimal newPrice = calculateDynamicPrice(flight);
 
         if (newPrice.compareTo(flight.getCurrentPrice()) != 0) {
-            // Записуємо зміну ціни в історію
+            // Record the price change in history
             priceHistoryDAO.save(PriceHistory.builder()
                     .flightId(flightId)
                     .oldPrice(flight.getCurrentPrice())
@@ -56,7 +56,7 @@ public class PriceService {
                     .reason(PriceHistory.PriceChangeReason.DEMAND_INCREASE)
                     .build());
 
-            // Оновлюємо поточну ціну
+            // Updating the current price
             flightDAO.updateCurrentPrice(flightId, newPrice);
         }
     }
@@ -64,11 +64,11 @@ public class PriceService {
     private BigDecimal calculateDynamicPrice(Flight flight) {
         BigDecimal price = flight.getBasePrice();
 
-        // Логіка динамічного ціноутворення
+        // The logic of dynamic pricing
         double fillRate = 1 - (flight.getAvailableSeats() / (double) flight.getTotalSeats());
         long daysToDeparture = ChronoUnit.DAYS.between(LocalDateTime.now(), flight.getDepartureTime());
 
-        // Коефіцієнти підвищення
+        // Increase factors
         if (fillRate > 0.7) price = price.multiply(BigDecimal.valueOf(1.2));
         else if (fillRate > 0.5) price = price.multiply(BigDecimal.valueOf(1.1));
 

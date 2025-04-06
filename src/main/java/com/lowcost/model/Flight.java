@@ -1,8 +1,6 @@
 package com.lowcost.model;
 
 import lombok.*;
-
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
 
@@ -23,23 +21,10 @@ public class Flight {
     private BigDecimal currentPrice;
     private boolean isActive;
 
-    /**
-     * Перевіряє, чи була підвищена ціна порівняно з базовою
-     */
     public boolean isPriceIncreased() {
         if (currentPrice == null) {
             return false;
         }
         return currentPrice.compareTo(basePrice) > 0;
-    }
-
-    /**
-     * Розраховує коефіцієнт підвищення ціни
-     */
-    public BigDecimal getPriceIncreaseFactor() {
-        if (!isPriceIncreased() || basePrice.compareTo(BigDecimal.ZERO) <= 0) {
-            return BigDecimal.ONE;
-        }
-        return currentPrice.divide(basePrice, 2, RoundingMode.HALF_UP);
     }
 }

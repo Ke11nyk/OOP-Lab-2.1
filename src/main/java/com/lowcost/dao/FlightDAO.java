@@ -143,25 +143,6 @@ public class FlightDAO {
         }
     }
 
-    public boolean resetCurrentPrice(int flightId) {
-        try {
-            PreparedStatement statement = connection.prepareStatement(
-                    "UPDATE flights SET current_price = base_price WHERE id = ?");
-
-            statement.setInt(1, flightId);
-
-            return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            log.error("Error resetting price for flight id: {}", flightId, e);
-            return false;
-        }
-    }
-
-    /**
-     * Зменшує кількість вільних місць на 1 (атомарна операція)
-     * @param flightId ID рейсу
-     * @return true якщо операція успішна, false якщо місць немає або сталася помилка
-     */
     public boolean decreaseAvailableSeats(int flightId) {
         try {
             PreparedStatement statement = connection.prepareStatement(
@@ -177,11 +158,6 @@ public class FlightDAO {
         }
     }
 
-    /**
-     * Збільшує кількість вільних місць на 1 (атомарна операція)
-     * @param flightId ID рейсу
-     * @return true якщо операція успішна, false якщо сталася помилка
-     */
     public boolean increaseAvailableSeats(int flightId) {
         try {
             PreparedStatement statement = connection.prepareStatement(
@@ -193,30 +169,6 @@ public class FlightDAO {
             return rowsUpdated > 0;
         } catch (SQLException e) {
             log.error("Error increasing available seats for flight id: {}", flightId, e);
-            return false;
-        }
-    }
-
-    /**
-     * Змінює кількість вільних місць на задану величину
-     * @param flightId ID рейсу
-     * @param delta зміна кількості місць (може бути від'ємним для зменшення)
-     * @return true якщо операція успішна, false якщо нова кількість місць недійсна або сталася помилка
-     */
-    public boolean changeAvailableSeats(int flightId, int delta) {
-        try {
-            PreparedStatement statement = connection.prepareStatement(
-                    "UPDATE flights SET available_seats = available_seats + ? " +
-                            "WHERE id = ? AND available_seats + ? BETWEEN 0 AND total_seats");
-
-            statement.setInt(1, delta);
-            statement.setInt(2, flightId);
-            statement.setInt(3, delta);
-
-            int rowsUpdated = statement.executeUpdate();
-            return rowsUpdated > 0;
-        } catch (SQLException e) {
-            log.error("Error changing available seats by {} for flight id: {}", delta, flightId, e);
             return false;
         }
     }

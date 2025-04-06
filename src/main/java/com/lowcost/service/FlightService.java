@@ -13,23 +13,23 @@ public class FlightService {
     public List<Flight> findAvailableFlights(String departure, String arrival) {
         log.info("Finding available flights from '{}' to '{}'", departure, arrival);
 
-        // Початковий список рейсів з DAO
+        // Initial list of flights from DAO
         List<Flight> allFlights = flightDAO.findByAirports(departure, arrival);
         log.info("Total flights found in DAO: {}", allFlights.size());
 
-        // Фільтруємо по активності
+        // Filter by activity
         List<Flight> activeFlights = allFlights.stream()
                 .filter(Flight::isActive)
                 .toList();
         log.info("Active flights: {}/{}", activeFlights.size(), allFlights.size());
 
-        // Фільтруємо по наявності місць
+        // Filter by availability
         List<Flight> availableFlights = activeFlights.stream()
                 .filter(f -> f.getAvailableSeats() > 0)
                 .toList();
         log.info("Flights with available seats: {}/{}", availableFlights.size(), activeFlights.size());
 
-        // Виведемо детальну інформацію про кожен рейс, що залишився
+        // We will display detailed information about each remaining flight
         availableFlights.forEach(flight ->
                 log.debug("Available flight: id={}, number={}, active={}, seats={}",
                         flight.getId(), flight.getFlightNumber(),

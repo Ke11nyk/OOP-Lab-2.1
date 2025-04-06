@@ -5,7 +5,6 @@ import com.lowcost.model.PriceHistory;
 import lombok.extern.log4j.Log4j2;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 

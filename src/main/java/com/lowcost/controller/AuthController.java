@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -41,7 +40,7 @@ public class AuthController extends HttpServlet {
             User authenticatedUser = userService.authenticate(email, password);
 
             if (authenticatedUser != null) {
-                // Не повертати пароль клієнту
+                // Do not return the password to the client
                 authenticatedUser.setPassword(null);
                 resp.setStatus(HttpServletResponse.SC_OK);
                 resp.setContentType("application/json");

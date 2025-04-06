@@ -30,7 +30,7 @@ public class UserController extends HttpServlet {
                 if (user == null) {
                     resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 } else {
-                    // Не повертати пароль клієнту
+                    // Do not return the password to the client
                     user.setPassword(null);
                     resp.setContentType("application/json");
                     resp.getWriter().write(objectMapper.writeValueAsString(user));
@@ -57,7 +57,7 @@ public class UserController extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.getWriter().write("{\"error\":\"Invalid user data or email already exists\"}");
         } else {
-            // Не повертати пароль клієнту
+            // Do not return the password to the client
             createdUser.setPassword(null);
             resp.setStatus(HttpServletResponse.SC_CREATED);
             resp.setContentType("application/json");
