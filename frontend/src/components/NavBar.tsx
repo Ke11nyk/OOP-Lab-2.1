@@ -12,13 +12,21 @@ const Navbar = () => {
                 {isAuthenticated ? (
                     <>
                         <Link to="/profile">Profile</Link>
-                        <button onClick={() => {
-                            localStorage.removeItem('authToken');
-                            window.location.reload();
-                        }}>Logout</button>
+                        <button
+                            onClick={() => {
+                                localStorage.removeItem('authToken');
+                                window.location.reload();
+                            }}
+                            className="logout-button"
+                        >
+                            Logout
+                        </button>
                     </>
                 ) : (
-                    <Link to="/login">Login</Link>
+                    <>
+                        <Link to="/login" className="auth-link">Login</Link>
+                        <Link to="/register" className="auth-link">Register</Link>
+                    </>
                 )}
             </div>
         </nav>
