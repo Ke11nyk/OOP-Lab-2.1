@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import api from '../../api/client';
 import './AuthForms.css';
+import {useAuth} from "./AuthContext";
 
 const LoginForm = () => {
     const [formData, setFormData] = useState({
@@ -20,6 +21,8 @@ const LoginForm = () => {
         }));
     };
 
+    const { login } = useAuth();
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
@@ -32,11 +35,8 @@ const LoginForm = () => {
             });
 
             if (response.data && response.data.id) {
-                localStorage.setItem('userId', response.data.id);
-                localStorage.setItem('authToken', 'true'); // Проста мітка автентифікації
-                if (response.data.fullName) {
-                    localStorage.setItem('userName', response.data.fullName);
-                }
+                // Use the context login function instead
+                login(response.data.id, response.data.fullName || 'User');
 
                 // Перенаправляємо на головну сторінку
                 navigate('/');

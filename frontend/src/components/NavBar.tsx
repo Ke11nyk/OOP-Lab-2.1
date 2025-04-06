@@ -1,20 +1,9 @@
 import { Link } from 'react-router-dom';
 import './NavBar.css';
+import { useAuth } from './Auth/AuthContext';
 
 const NavBar = () => {
-    // Перевіряємо, чи користувач залогінений (наприклад, за наявністю токена)
-    const isAuthenticated = !!localStorage.getItem('authToken');
-    // Отримуємо ім'я користувача, якщо воно збережене
-    const userName = localStorage.getItem('userName');
-
-    const handleLogout = () => {
-        // Видаляємо дані користувача з localStorage
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userId');
-        localStorage.removeItem('userName');
-        // Оновлюємо сторінку
-        window.location.reload();
-    };
+    const { isAuthenticated, userData, logout } = useAuth();
 
     return (
         <nav className="navbar">
@@ -23,20 +12,15 @@ const NavBar = () => {
                 <Link to="/flights">Flights</Link>
 
                 {isAuthenticated ? (
-                    <>
-                        {/* Якщо користувач залогінений */}
-                        {userName && <span className="user-greeting">Hello, {userName}</span>}
-                        <Link to="/profile">Profile</Link>
-                        <button onClick={handleLogout} className="logout-button">
-                            Logout
-                        </button>
-                    </>
+                    <div className="user-section">
+                        <span>Welcome, {userData?.name}</span>
+                        <button className="logout-button" onClick={logout}>Log out</button>
+                    </div>
                 ) : (
-                    <>
-                        {/* Якщо користувач не залогінений */}
-                        <Link to="/login" className="auth-link">Login</Link>
-                        <Link to="/register" className="auth-link">Register</Link>
-                    </>
+                    <div className="auth-links">
+                        <Link to="/login">Log in</Link>
+                        <Link to="/register">Register</Link>
+                    </div>
                 )}
             </div>
         </nav>

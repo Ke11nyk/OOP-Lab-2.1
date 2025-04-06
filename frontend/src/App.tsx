@@ -6,20 +6,23 @@ import LoginForm from './components/Auth/LoginForm';
 import RegisterForm from './components/Auth/RegisterForm';
 import Navbar from './components/NavBar';
 import './App.css';
+import {AuthProvider} from "./components/Auth/AuthContext";
 
 function App() {
   return (
       <BrowserRouter>
-        <Navbar />
-        <div className="app-content">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/flights" element={<FlightsPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/login" element={<LoginForm />} />
-            <Route path="/register" element={<RegisterForm />} />
-          </Routes>
-        </div>
+          <AuthProvider>
+              <Navbar />
+              <div className="app-content">
+                  <Routes>
+                      <Route path="/" element={<HomePage />} />
+                        <Route path="/flights" element={<FlightsPage />} />
+                        <Route path="/profile" element={<ProfilePage />} />
+                        <Route path="/login" element={<LoginForm />} />
+                        <Route path="/register" element={<RegisterForm />} />
+                  </Routes>
+              </div>
+          </AuthProvider>
       </BrowserRouter>
   );
 }
