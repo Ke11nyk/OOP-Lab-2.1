@@ -11,7 +11,7 @@ import org.mapstruct.factory.Mappers;
 public interface PaymentMapper {
     PaymentMapper INSTANCE = Mappers.getMapper(PaymentMapper.class);
 
-    @Mapping(target = "bookingNumber", source = "booking.bookingNumber")
+    @Mapping(target = "bookingReference", source = "booking.bookingReference")
     @Mapping(target = "amount", source = "booking.totalPrice")
     PaymentRequestDTO toPaymentRequestDTO(Booking booking);
 
