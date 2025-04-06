@@ -1,19 +1,40 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../api/client';
+import { useNavigate } from 'react-router-dom';
 
 interface BookingFormProps {
     flightId: number;
-    userId?: number; // Add userId as prop
 }
 
-const BookingForm = ({ flightId, userId = 1 }: BookingFormProps) => {
+const BookingForm = ({ flightId }: BookingFormProps) => {
     const [priority, setPriority] = useState(false);
     const [baggage, setBaggage] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [userId, setUserId] = useState<number | null>(null);
+    const navigate = useNavigate();
+
+    // Отримуємо userId з localStorage при завантаженні компонента
+    useEffect(() => {
+        const storedUserId = localStorage.getItem('userId');
+        if (!storedUserId) {
+            // Якщо користувач не авторизований, перенаправляємо на сторінку входу
+            navigate('/login?redirect=booking');
+            return;
+        }
+        setUserId(parseInt(storedUserId));
+    }, [navigate]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Перевірка, чи користувач авторизований
+        if (!userId) {
+            setError('Для бронювання необхідно увійти в систему');
+            navigate('/login?redirect=booking');
+            return;
+        }
+
         setIsSubmitting(true);
         setError(null);
 
@@ -23,12 +44,12 @@ const BookingForm = ({ flightId, userId = 1 }: BookingFormProps) => {
                 priorityBoarding: priority,
                 checkedBaggage: baggage > 0,
                 baggageCount: baggage,
-                userId: 0
+                userId: userId
             });
-            alert(`Booking created! Reference: ${response.data.bookingReference}`);
+            alert(`Бронювання створено! Номер: ${response.data.bookingReference}`);
         } catch (error: any) {
-            console.error('Booking failed:', error);
-            setError(error.response?.data?.error || 'Booking failed. Please try again.');
+            console.error('Помилка бронювання:', error);
+            setError(error.response?.data?.error || 'Не вдалося забронювати. Спробуйте ще раз.');
         } finally {
             setIsSubmitting(false);
         }
@@ -39,7 +60,7 @@ const BookingForm = ({ flightId, userId = 1 }: BookingFormProps) => {
             {error && <div className="error-message">{error}</div>}
 
             <label>
-                Priority Boarding:
+                Пріоритетна посадка:
                 <input
                     type="checkbox"
                     checked={priority}
@@ -48,7 +69,7 @@ const BookingForm = ({ flightId, userId = 1 }: BookingFormProps) => {
             </label>
 
             <label>
-                Baggage (max 3):
+                Багаж (максимум 3):
                 <input
                     type="number"
                     min="0"
@@ -58,8 +79,8 @@ const BookingForm = ({ flightId, userId = 1 }: BookingFormProps) => {
                 />
             </label>
 
-            <button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Processing...' : 'Book Flight'}
+            <button type="submit" disabled={isSubmitting || !userId}>
+                {isSubmitting ? 'Обробка...' : 'Забронювати рейс'}
             </button>
         </form>
     );
